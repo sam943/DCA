@@ -11,6 +11,7 @@ cd /var/run/
    	- ls -l docker.sock
    	- useradd user1
 	- usermod -aG docker user1 
+
   Complete Docker Installation on Multiple Platforms (Debian/Ubuntu)
   ------------------------------------------------------------------	
 	- apt-get install apt-transport-https ca-certificates curl software-properties-common
@@ -54,3 +55,24 @@ cd /var/run/
 	- If you are ever changing the storage driver, it is best recommeneded to take the backup/export of the existing images and import after changing the storage drivers
 	- Once you change the storage driver to devicemapper, you will notice devicemapper directory under /var/lib/docker/.
 	- Any images downloaded will also increase size of this devicemapper
+
+   Configuring Logging Drivers (Syslog, JSON-File, etc.)
+   -----------------------------------------------------
+	- configuring the logging drivers as similar to as storage drivers
+	- Docker includes multiple logging mechanisms to help you get information from running containers and services. These mechanisms are called logging drivers.	
+
+  Setting Up Swarm
+  -----------------
+	- Setting up docker swarm mode cluster.
+	- (manager)
+	- docker swarm is going to contain one or more nodes or one or more managers
+	- nodes does the work and managers manage the workload 
+	- Setup manager to deploy containers and services
+		- docker swarn init --advertise-addr <SERVER_IP>
+	  	
+		- docker swarm join --token SWMTKN-1-<TOKEN> <SERVER_IP>:<PORT> # Note this token for adding nodes to the manager
+		- docker swarm join-token worker # you can use this command on the manager to generate docker join-token used for adding the nodes
+	- If you need to add another node as a additional manager , you will need to generate manager token
+		- docker swarm join-token manager
+
+	

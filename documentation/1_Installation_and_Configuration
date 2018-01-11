@@ -1,0 +1,25 @@
+Installation and Configuration - 15%
+
+  Complete Docker Installation on Multiple Platforms (CentOS/Red Hat)
+  -------------------------------------------------------------------
+	- yum install -y yum-utils device-mapper-persistent-data lvm2
+	- yum config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
+	- yum update
+	-  yum install -y docker-ce
+ 	- systemctl enable docker && systemctl start docker && systemctl status docker
+cd /var/run/
+   	- ls -l docker.sock
+   	- useradd user1
+	- usermod -aG docker user1 
+  Complete Docker Installation on Multiple Platforms (Debian/Ubuntu)
+  ------------------------------------------------------------------	
+	- apt-get install apt-transport-https ca-certificates curl software-properties-common
+	- curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+	- sudo apt-get repository "deb [arch-amd64] https://downlaod.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+	- apt-get update
+	- apt-get install docker-ce
+	- systemctl status docker
+	- usermod -aG docker user1
+	- /var/run/docker.sock 
+
+

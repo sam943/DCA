@@ -22,4 +22,35 @@ cd /var/run/
 	- usermod -aG docker user1
 	- /var/run/docker.sock 
 
+  Selecting a Storage Driver
+  --------------------------
+	- Docker supports several different storage drivers, using a pluggable architecture. The storage driver controls how images and containers are stored and managed on your Docker host.
+	- try to use the storage driver with the best overall performance and stability in the most usual scenarios.
+		- overlay2 is preferred, followed by overlay. Neither of these requires extra configuration. overlay2 is the default choice for Docker CE.
+		- devicemapper is next, but requires direct-lvm for production environments, because loopback-lvm, while zero-configuration, has very poor performance
+	- devicemapper is officially supported on centos/fedora
+	Linux distribution	Recommended storage drivers
+	Docker CE on Ubuntu	aufs, devicemapper, overlay2 (Ubuntu 14.04.4 or later, 16.04 or later), overlay, zfs, vfs
+	Docker CE on Debian	aufs, devicemapper, overlay2 (Debian Stretch), overlay, vfs
+	Docker CE on CentOS	devicemapper, vfs
+	Docker CE on Fedora	devicemapper, overlay2 (Fedora 26 or later, experimental), overlay (experimental), vf	
 
+	- If you need to change the storage driver, then you can create daemon.json under /etc/docker and add the storage driver
+	- The default storage driver that comes along with docker-ce installation is overlay
+	- By the adding below json object into daemon.json and restarting the docker service will change the storage driver
+	- JSON object 
+		cat /etc/docker/daemon.json
+			{
+				"storage-driver" : "devicemapper"
+			}	
+	- restart docker service
+		systemctl restart docker.service
+	- check the storage driver
+		[root@localhost documentation]# docker info | grep Storage
+		WARNING: devicemapper: usage of loopback devices is strongly discouraged for production use.
+		         Use `--storage-opt dm.thinpooldev` to specify a custom block storage device.
+		Storage Driver: devicemapper
+	- devicemapper is offically supported,recommended storage driver
+	- If you are ever changing the storage driver, it is best recommeneded to take the backup/export of the existing images and import after changing the storage drivers
+	- Once you change the storage driver to devicemapper, you will notice devicemapper directory under /var/lib/docker/.
+	- Any images downloaded will also increase size of this devicemapper

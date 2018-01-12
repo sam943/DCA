@@ -60,6 +60,32 @@ cd /var/run/
    -----------------------------------------------------
 	- configuring the logging drivers as similar to as storage drivers
 	- Docker includes multiple logging mechanisms to help you get information from running containers and services. These mechanisms are called logging drivers.	
+	- To configure the Docker daemon to default to a specific logging driver, set the value of log-driver to the name of the logging driver in the daemon.json
+
+ 	- docker info | grep "Logging" will provide the logging driver	
+	- To change the default log driver from json-format to syslog, update below JSONdoc into the /etc/docker/daemon.json
+	- JSON object
+                cat /etc/docker/daemon.json
+                        {
+                                "log-driver" : "syslog"
+			        "log-opts" : {
+                        			"syslog-address" :  "udp://<docker-host-ip>:514"
+			                     }	
+                        } 
+	- And also uncomment module(load="imudp") & input(type="imudp" port="514") in /etc/rsyslog.conf
+	- Restart the rsyslog and docker services
+	- docker info | grep "Logging" will provide the logging driver
+	- After the above configuration if you start the docker container, docker logs will be logged into /var/log/messages
+	-  docker run -it --log-driver <driver_name> <image_name:tag> # you can also specify or overwrite the default log-driver per container also
+	- docker inspect -f '{{.HostConfig.LogConfig.Type}}' <CONTAINER> # check log-driver on container
+
+	- Docker provides two modes for delivering messages from the container to the log driver:
+		- (default) direct, blocking delivery from container to drive
+		- non-blocking delivery that stores log messages in an intermediate per-container ring buffer for consumption by driver	
+ 	- Below is an exampe for non-blocking mode
+		docker run -it --log-opt mode=non-blocking --log-opt max-buffer-size=4m <image_id:tag>	
+	- The max-buffer-size log option controls the size of the ring buffer used for intermediate message storage when mode is set to non-blocking. max-buffer-size defaults to 1 megabyte.	
+	
 
   Setting Up Swarm
   -----------------
@@ -69,10 +95,72 @@ cd /var/run/
 	- nodes does the work and managers manage the workload 
 	- Setup manager to deploy containers and services
 		- docker swarn init --advertise-addr <SERVER_IP>
-	  	
+	  	- Once init is executed, then below worker token is created
 		- docker swarm join --token SWMTKN-1-<TOKEN> <SERVER_IP>:<PORT> # Note this token for adding nodes to the manager
 		- docker swarm join-token worker # you can use this command on the manager to generate docker join-token used for adding the nodes
 	- If you need to add another node as a additional manager , you will need to generate manager token
-		- docker swarm join-token manager
+		- docker swarm join-token manager # token to join another manager"
+
+  Setting Up Swarm (Add Nodes)
+  ----------------------------
+	
+	- Once the manager is setup if you run the docker node ls command, you should see host that manager/Leader an
+	- docker system info # Would provide the more information about how many worker and manager are added
+	- run "docker swarm join-token worker" on worker nodes 1 and nodes 2 to join the nodes to this manager
+	- If you get the below error when you try to add the swarm worker nodes to manager
+		Error response from daemon: rpc error: code = 14 desc = grpc: the connection is unavailable
+	  then
+		disable firewall on manager (systemctl stop firewalld) or allow the port in firewall
+	- After added node1 and node2 to the manager and run docker node ls, You should see below information
+
+	ID       HOSTNAME                 		STATUS     AVAILABILITY     MANAGER STATUS
+	<ID> *   docker-host-1.localdomain              Ready      Active    	    Leader
+	<ID>     docker-worker-node-1.localdomain       Ready      Active
+	<ID>     docker-worker-node-2.localdomain       Ready      Active
+
+  Setting Up Swarm (Backup and Restore)
+  -------------------------------------
+
+	- docker service create --name <service_name> -p 80:80 --replicas 2 <imageid:tag> # Create a service and define the number of repicas
+  	- docker service ls # will list the services running
+	- docker service ps backupweb  # will show the no.of replicas running for the service
+	- Backup Swarm
+		- Stop the docker server one of the  manager (sudo systemctl docker stop)	
+		- Take the backup for /var/lib/docker/swarm directory as swarm-bkup.tar
+		- Copy over the backup swarm directory to new server
+		- Untar this swarm-bkup.tar into /var/lib/docker/swarm
+		- Then run, docker swarm init --force-new-cluster
+		 
+		
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	

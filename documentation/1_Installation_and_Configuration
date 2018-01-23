@@ -159,3 +159,17 @@ v	- Performance Considerations(Timings)
 
   Setup and Configure UCP and DTR for Secure Cluster Management
   ------------------------------------------------------------
+	-- Install UCP (Universal Control Plane)
+
+		 docker container run --rm -it --name ucp -v /var/run/docker.sock:/var/run/docker.sock docker/ucp:2.2.4 install --host-address <HOST_IP> --interactive
+	 	 - The above command will install the UCP server. But, before you setup the UCP you will some basic swarm environment ( like manager and worker ), so you see and manager nodes on  the UCP UI and manage the same way you do on the command line
+		 - Once you setup UCP, you get the https:<HOST_NAME/IP>:443 URL that you can access the UCP UI
+		- Once you login you  see the dashboard for swarm environment and also manage the opertion through
+		- If you want to interate DTR with UCP, will need to get the comamnd details from "Advanced Settings" -> DTR -> Insecure-TLS(if you want to ignore tls
+		Once you select the above the below command similar command is generated.	
+	 -- Install DTR (Docker Trusted Registery)
+	 	docker run -it --rm docker/dtr install  --ucp-node docker-swarm-manager-2.localdomain  --ucp-username admin  --ucp-url https://192.168.99.103:443 --ucp-insecure-tls --replica-http-port 8080 --replica-https-port 8443 
+		- The above command will install the DTR and intgreate with UCP.
+		- You can change the default port (80, 443) with --replica-http-port  and --replica-https-port
+		- Once the above the command is executed use teh https:<HOST_IP>:8443 to access the DTR
+		- DTR password will be same as UCP 		

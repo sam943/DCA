@@ -130,37 +130,32 @@ cd /var/run/
 		- Copy over the backup swarm directory to new server
 		- Untar this swarm-bkup.tar into /var/lib/docker/swarm
 		- Then run, docker swarm init --force-new-cluster
-		 
+
+  Outline the Sizing Requirements Prior to Installation
+  -------------------------------------
+     - Disk space,Memory and CPU will need to be considered when planning
+     - Concurreny
+     - 
+     - UCP(Universal Control Panel) is a UI for managing docker-managers or DTRs(Docker trusted Registery)
+     	- Requirement for UCP
+		- 8GB memory for manager or DTR, 4GB memory for workers and 3GB diskspace
+		- 4vCPUs
 		
+v	- Performance Considerations(Timings)
+		-  Raft Consensus between manager nodes - 3000 - Not Configurable
+		-  Gossip Protocal for overlay networking - 5000 - Not Configurable
+		-  etcd - 500 - yes
+		-  RethinkDB - 10000 - Not Configurable
+		-  Standalone-swarm - 10000 - Not Configurable
 		
+	-  Docker EE Includes
+		- Docker Engine with Support
+		- Docker Trusted Registry
+		- Universal Control Plane
+	- Compatibility
+		- Docker Engine 17.06+
+		- DTR 2.3+
+		- UCP 2.2+
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	
+  Setup and Configure UCP and DTR for Secure Cluster Management
+  ------------------------------------------------------------

@@ -173,3 +173,20 @@ v	- Performance Considerations(Timings)
 		- You can change the default port (80, 443) with --replica-http-port  and --replica-https-port
 		- Once the above the command is executed use teh https:<HOST_IP>:8443 to access the DTR
 		- DTR password will be same as UCP 		
+
+  Complete Backup for UCP and DTR
+  --------------------------------
+	-- Backup UCP
+	docker container run --log-driver none --rm -i --name ucp -v /var/run/docker.sock:/var/run/docker.sock docker/ucp backup > backup.tar
+	docker container run --log-driver none --rm -i --name ucp -v /var/run/docker.sock:/var/run/docker.sock docker/ucp backup --id <ID_RETURNED FROM ABOVE> > backup.tar # without interactive mode
+
+	-- Restore UCP
+	docker container run --log-driver none --rm -i --name ucp -v /var/run/docker.sock:/var/run/docker.sock docker/ucp restore  < backup.tar
+
+	-- Backup DTR
+	docker run -i --rm docker/dtr backup --ucp-insecure-tls --ucp-url https://192.168.99.103:443 --ucp-username admin  > dtr-backup.tar
+
+	-- Restore DTR
+	docker run -i --rm docker/dtr backup --ucp-insecure-tls --ucp-url https://192.168.99.103:443 --ucp-username admin  < dtr-backup.tar
+
+	Note : When you run backup on DTR, DTR is offline until the backup is completed. This means that all docker push, pull, run that uses the DTR will fail during this time. So It is always advised to backup during midnights

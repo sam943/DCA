@@ -190,3 +190,30 @@ v	- Performance Considerations(Timings)
 	docker run -i --rm docker/dtr backup --ucp-insecure-tls --ucp-url https://192.168.99.103:443 --ucp-username admin  < dtr-backup.tar
 
 	Note : When you run backup on DTR, DTR is offline until the backup is completed. This means that all docker push, pull, run that uses the DTR will fail during this time. So It is always advised to backup during midnights
+
+  Create and Manage UCP Users and Teams 
+  -------------------------------------
+	- create users, organizations and teams
+	- add user to team and team to originzation
+  
+   Namespaces, CGroups, and Certificates
+  --------------------------------------
+	- Namespaces provide 'isolation; so that other pieces of system remain unaffected by whatever is within that namespace
+	- Docker uses namespaces of various kind to provide the isolocation that containers need in order to remain portble and refrain from affecting the remainder of the host hosts system.
+	- Namespace Types
+		- ProcessID
+		- Mount
+		- IPC (Inter process communcation)
+		- User (experimental support)
+		- Network
+        - Docker and Control Groups(cgroups)
+	Control Groups provide resource limition and reporting capability within the contianer space. They allow granular control over what host resources are allocated to the container and when they are allocated.
+	Common Control Groups
+		- CPU
+		- Memory
+		- Network Bandwidth
+		- Disk
+		- Priority
+	
+
+

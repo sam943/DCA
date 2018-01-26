@@ -1,0 +1,68 @@
+Pull an Image from a Registry (Using Docker Pull and Docker Images
+------------------------------------------------------------------
+	
+		docker pull hello-world
+		docker pull -a hello-world # all tagged images
+		docker images
+		docker pull --disable-content-trust hello-world # pull only from trusted content 
+		docker run hello-world
+		docker images --all # all images
+		docker images --digests # return all digest for the images
+		docker pull centos:6
+		docker images --filter "before=centos:6"
+		docker images --no-trunc # display full IDs
+		docker images -q # only 7 digit IDs
+Searching an Image Repository
+----------------------------
+		docker search <name> # download the images that have more than 50 stars is offical
+		docker search --filter start=50 httpd -filter is-offical apache
+		docker search --limit 50 apache
+------------
+Tag an Image
+-------------
+
+		docker tag centos:6 mycentos:1 # creates new tag for exiting images
+		docker images
+		docker rmi centos:6 # will only remove the tag
+		docker rmi mycentos:1 # will remove the complete image
+		docker pull centos:6 # pull it agin
+		docker tag centos:6 myrepo/mycentos:v1 # tag with reponame in it
+
+----------------------------------------------------------------
+Use CLI Commands to Manage Images (List, Delete, Prune, RMI, etc)
+-----------------------------------------------------------------
+  		docker image history myrepo/mycentos:v1
+		docker image save myrepo/mycentos:v1 -o mycustome.tar # backup an email
+		docker rmi myrepo/mycentos:v1 # remove the image
+		docker import mycustome.tar localimport:centos # importing an backup images
+		docker load --input mycustome.tar # restore an backed up image
+		docker image ls # list images
+		docker image prune # will delete dangling images. That means, it deletes the images that are netither associated to container nor complete image
+		docker image prune -a	# Will delete all the images that are not associated with atleast one container
+
+Inspect Images and Report Specific Attributes Using Filter and Format
+-----------------------------------------------------------------
+		docker image inspect <image>:<tag> # will provide the information on image in a json format
+		docker image inspect centos:6 --format '{{.ContainerConfig.Hostname}}' # This command will get the value of Hostname
+		
+		docker image inspect centos:6 --format '{{.ContainerConfig}}' # gives the values for the given key
+		docker image inspect centos:6 --format '{{json .ContainerConfig}}' # provides key and value in json format
+  		docker image inspect centos:6 --format '{{.RepoTags}}' # List the repo tag in the image inspect json
+
+Container Basics - Running, Attaching to, and Executing Commands in Containers
+------------------------------------------------------------------------------
+	 docker run centos:6 # run the container with centos:6 images. 
+	 docker ps -a # check the containers that are started and stopped
+	 docker run -it centos:6 # start the container attach it interactively to the terminal
+	 docker run -it --name testcontainer centos:6 /bin/bash # Provide name to container
+	 docker rm `docker ps -a -q` # delete all the stopped containers
+	 docker run -it --rm --name testcontainer centos:6 /bin/bash # --rm will delete the stopped image after container is stopped
+	 docker run -it --rm --env MYVAR=whatever --name testcontainer centos:6 /bin/bash # passing environment variable on command line
+	 docker run -it --rm --env MYVAR=whatever --env MYVAR2=somthing --name testcontainer centos:6 /bin/bash # passing multiple pasramaters
+	 docker run -d --rm --name testcontainer centos:6 /bin/bash # run the contauner in detached mode. but it starts and exit as we have mentioned /bin/bash as entry point
+	 docker run -d --name testcontainer centos:6 # This will start the contiainer in deatched mode and use the entry defined for the image 
+	 docker attach <container_name or _id> # if you attache and exit the container, the container will be stopped
+	 docker exec -it <container_name or _id> /bin/bash # use exec to login and ensure the container exit wil not stop the container:w
+
+
+

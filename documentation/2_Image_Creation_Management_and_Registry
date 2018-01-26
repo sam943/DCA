@@ -62,7 +62,29 @@ Container Basics - Running, Attaching to, and Executing Commands in Containers
 	 docker run -d --rm --name testcontainer centos:6 /bin/bash # run the contauner in detached mode. but it starts and exit as we have mentioned /bin/bash as entry point
 	 docker run -d --name testcontainer centos:6 # This will start the contiainer in deatched mode and use the entry defined for the image 
 	 docker attach <container_name or _id> # if you attache and exit the container, the container will be stopped
-	 docker exec -it <container_name or _id> /bin/bash # use exec to login and ensure the container exit wil not stop the container:w
+	 docker exec -it <container_name or _id> /bin/bash # use exec to login and ensure the container exit wil not stop the container
 
+Container Basics - Running, Attaching to, and Executing Commands in Containers
+------------------------------------------------------------------------------
+  	vim Dockerfile # Create Dockerfile for building the docker images
+	
+	Below is an exmaple
+	-----------------------------------------------
+		# This is small test docker file
+		FROM centos:6
+		LABEL maintainer="sam943"
+
+		RUN yum update -y	
+	----------------------------------------------
+	docker build -t  custom_image:v1 . #build docker images from the directory where Dockefile exists 
+	vim Dockerfile # update the docker file and rebuild
+	docker build -t  custom_image:v1 . # at the point it will rebuild the images with multiple layers
+	cp Dockerfile Dockerfile2 
+	vim Dockerfile2
+	docker build -t new_ubuntu:v2 -f Dockerfile2 . # running docker with different file name other Dockerfile
+	docker build - < Dockerfile # sample as above
+	docker build -t https://github_url # can also execute the docker that is on github or another scm tool
+	docker build --pull --no-cache --squash -t optimized:v1 . # --no-cache will not maintain and --squase will merge all the layers of images and intermediates images into a single images
+	docker build --pull --no-cache -t optimized:v1 . # builing the image with any cache
 
 

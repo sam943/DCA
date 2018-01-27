@@ -192,6 +192,56 @@ Selecting a Docker Storage Driver
 	-- All the images that were installed on overlay will deleted and you will also see devicemapper directory under /var/lib/docker as the storage subsystem along with overlay
 	-- "docker info | grep Storage" should also provide the devicemapper as storage subsystem
 
+Prepare for a Docker Secure Registry
+-----------------------------------
+  # Create Directory structure
+  mkdir -p /etc/docker/certs.d/myregistrydomain.com:5000
+  # Below are temp directorues
+  mkdir auth certs
+  # Request a self-signed certificate
+  openssl req -newkey rsa:4096 -nodes -sha256 -keyout dockerrepo.key -x509 -days 365 -out dockerrepo.crt -subj /CN=myregistrydomain.com
+  # copy the dockerrepo.crt to /etc/docker/certs.d/myregistrydomain.com:5000/ca.crt
+  cp certs/dockerrepo.crt /etc/docker/certs.d/myregistrydomain.com:5000/ca.crt
+  # Edit the /etc/hosts and add myregistrydomain.com host as local Dns if required
+  vim /etc/hosts
+  # Pull registry image with version 2
+  docker pull registry:2A
+  # Run the images to generate htpasswd
+  docker run --entrypoint htpasswd registry:2 -Bbn test password > auth/htpasswd
+  cat auth/htpasswd
+
+Deploy, Configure, Log Into, Push, and Pull an Image in a Registry
+-------------------------------------------------------------------
+
+# Use the below command to start the registry 
+
+docker run -d -p 5000:5000 -v $(pwd)/certs/:/certs -e REGISTRY_HTTP_TLS_CERTICATE=/certs/dockerrepo.crt -e REGISTRY_HTTP_TLS_KEY=/certs/dockerrepo.key -v $(pwd)/auth/:/auth -e REGISTRY_AUTH=htpasswd -e REGISTRY_AUTH_HTPASSWD_REALM="Registry Realm" -e REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd registry:2
+
+# Use docker login command and registry hostname to login into registry for pulling and pushing the images
+docker login myregistrydomain.com:5000/busybox
+
+docker push myregistrydomain.com:5000/busybox # push busybox image
+
+# Delete the existing images 
+docker rmi myregistrydomain.com:5000/busybox
+docker rmi busyboxA
+
+# Re-pull the images from private registry
+docker pull myregistrydomain.com:5000/busybox
+
+# Troubleshooting ::::::::
+
+If the below issue identified add insecure-registries into daemon.json and restart container
+
+Error response from daemon: Get https://myregistrydomain.com:5000/v2/: http: server gave HTTP response to HTTPS client
+
+cat /etc/docker/daemon.json
+    {
+        "insecure-registries": ["myregistrydomain.com:5000"]
+    }
+    
+systemctl restart docker
+
 	
 	
  

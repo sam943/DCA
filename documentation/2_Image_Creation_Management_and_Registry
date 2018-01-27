@@ -176,6 +176,22 @@ Modify an Image to a Single Layer
 		docker import myweb_optimzed:v3 myweb_optimzed_v2.tar
 	Now AFTER the import there is only layer that is import layer and the size is compressed to save disk space
 
+Selecting a Docker Storage Driver
+---------------------------------
+
+	-- By default, when you install overlay is storage subsystem that is installed and used
+	-- However, there is compatibility matrix available on docker site for what storage drivers are support for what OS in production environment and offically supported by docker in docker-ee environment
+	-- "docker info | grep Storage" will provide the default storage driver info
+	-- "devicemapper" is offically supported by docker in docker-ee version and if you need to change the default storage driver
+	-- /etc/docker/daemon.json file needs to be created and below JSON object should be defined it 
+
+		{
+			"storage-driver" : "devicemapper"
+		}
+	-- restart docker service
+	-- All the images that were installed on overlay will deleted and you will also see devicemapper directory under /var/lib/docker as the storage subsystem along with overlay
+	-- "docker info | grep Storage" should also provide the devicemapper as storage subsystem
+
 	
 	
  

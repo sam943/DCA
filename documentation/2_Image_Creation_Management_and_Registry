@@ -87,4 +87,147 @@ Container Basics - Running, Attaching to, and Executing Commands in Containers
 	docker build --pull --no-cache --squash -t optimized:v1 . # --no-cache will not maintain and --squase will merge all the layers of images and intermediates images into a single images
 	docker build --pull --no-cache -t optimized:v1 . # builing the image with any cache
 
+Dockerfile Options, Structure, and Efficiencies (Part I)
+---------------------------------------------------------
+-- Dockerfile Options and Structures avaialable
+	FROM # Is will be first structure of the docker file that will be started with and this indicated from where the docker base image is build upon
+	ARGS  # This is the only structure that can exceed before FROM structure and is used for passing as argunments
+	RUN # Command defined in RUN Structure are used to prepare the image
+	CMD # Command defined under CMD structure are used at the start of container instatiation and can overwritter when staring container instatition
+	ENTRYPOINT # Command defined under ENTRYPOINT are used at the start of the container and can't be changed during the container startup
+	LABEL # is metadeta for the container ; example LABEL maintainer=<someone>@<somedomain>
+	MAINTAINER # Deprecated in recent release. However, the same can defined under LABEL
+	EXPOSE # ports defined can be exposed in the image metadata
+
+-- Below is an example of Dockerfile for starting 
+	FROM centos:6
+	LABEL maintainer=sam
+	
+	RUN yum update -y
+	RUN yum install httpd net-tools -y 
+	RUN rm -rf /run/http/* /tmp/httpd*
+        
+	ENV ENVIRONMENT=PROD
+	EXPOSE 80
+	ENTRYPOINT apachectl "-DFOREGROUD" 
+
+-- Each structure mentioned above when defined in Dockerfile will be layer in the image and while it tries to build the images. The above build file has 8 structure defined
+-- So to optimize layers while building the image we can group same the structure if neccessary as below. The below build file optimize the layers from 8 to 6
+        FROM centos:6
+        LABEL maintainer=sam
+
+        RUN yum update -y \
+	    yum install httpd net-tools -y \
+            rm -rf /run/http/* /tmp/httpd*
+
+        ENV ENVIRONMENT=PROD
+        EXPOSE 80
+        ENTRYPOINT apachectl "-DFOREGROUD"
+
+-- Lets add few more layers
+	ARGS TAGVERSION=6 # defining a variable 
+        FROM centos:${TAGVERSION}
+        LABEL maintainer=sam
+	COPY index.html /var/www/html
+
+        RUN yum update -y \
+            yum install httpd net-tools -y \
+            rm -rf /run/http/* /tmp/httpd*
+
+        ENV ENVIRONMENT=PROD
+	VOLUME /mymountpoint # Creating mountpoints
+        EXPOSE 80
+        ENTRYPOINT apachectl "-DFOREGROUD"
+-- ARGS can used as variable through dockerfile when defined file paths and other complex paths
+-- docker ps --no-trunc # will sho the full command executed for that container
+-- ADD and COPY does that same operation of copying of files from source to destination. However, ADD also copy from URL to desc, but COPY is only work with file on local filesystem
+-- SHELL structure can be used to change the login shell at ENTRYPOINT
+-- WORKDIR is used for changing the working directory from where the container is running
+
+Describe and Display How Image Layers Work
+------------------------------------------
+	-- Images layers are command executed for each structure defined on the build file
+	-- If you run docker images history <image>:<version>, you would notice that each structure is seperately executed on different file system
+	-- docker used union file system and groups all the command executed at different layer on different filesystem into a single image filesystem	
+	-- you will also notice that actual size of the images is union of each layer size. below is an example
+		docker images myweb_optimzed:v2
+
+		REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+		myweb_optimzed      v2                  5a6b5d8c908a        31 minutes ago      320MB
+
+		docker image history myweb_optimzed:v2
+		
+		IMAGE               CREATED             CREATED BY                                      SIZE                COMMENT
+		5a6b5d8c908a        31 minutes ago      /bin/sh -c #(nop)  ENTRYPOINT ["/bin/sh" "-c…   0B
+		31c50119e21a        31 minutes ago      /bin/sh -c #(nop)  EXPOSE 80                    0B
+		eded1642b33d        31 minutes ago      /bin/sh -c #(nop)  ENV ENVIRONMENT=PROD         0B
+		4b18c502e052        31 minutes ago      /bin/sh -c yum update -y &&     yum install …   126MB
+		c4ad1483546f        38 minutes ago      /bin/sh -c #(nop)  LABEL maintainer=sam         0B
+		609c1f9b5406        2 weeks ago         /bin/sh -c #(nop)  CMD ["/bin/bash"]            0B
+		<missing>           2 weeks ago         /bin/sh -c #(nop)  LABEL name=CentOS Base Im…   0B
+		<missing>           2 weeks ago         /bin/sh -c #(nop) ADD file:a492298cd1f5ef632…   195MB	
+
+Modify an Image to a Single Layer
+---------------------------------
+	-- There is no direct command to merge all the layers into a single layer provided by docker. But there is open-source project to squase the layers into single layer
+	-- As far is docker is concerned we can export the image and re-import it to save somediskspace
+	Example :
+		docker export myweb_optimzed:v2 > myweb_optimzed_v2.tar
+		docker import myweb_optimzed:v3 myweb_optimzed_v2.tar
+	Now AFTER the import there is only layer that is import layer and the size is compressed to save disk space
+
+	
+	
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

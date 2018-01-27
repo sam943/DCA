@@ -1,0 +1,5 @@
+# This is small test docker file
+FROM ubuntu:latest
+LABEL maintainer="sam943"
+
+RUN apt-get -y

@@ -1,0 +1,10 @@
+FROM centos:6
+LABEL maintainer=sam
+
+RUN yum update -y && \
+    yum install httpd net-tools -y && \
+    rm -rf /run/http/* /tmp/httpd*
+
+ENV ENVIRONMENT=PROD
+EXPOSE 80
+ENTRYPOINT apachectl "-DFOREGROUD"

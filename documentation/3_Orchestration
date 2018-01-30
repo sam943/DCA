@@ -80,4 +80,58 @@ Lecture: Demonstrate the Usage of Templates with 'docker service create'
   	- docker service ps --no-trunc <servicename>
 	- docker inspect --format="{{.Config.Hostname}}" <Service_name>.1.<ID>
 
+Lecture: Apply Node Labels for Task Placement
+---------------------------------------------
+	- docker node inspect --pretty tk44qwoirf67wpl057xwc13mu # human readable instead of JSON format
+	- docker node update --label-add mynode=<label_name> <Worker and manager node> # assign a label to the swarm node 
+	- docker service create --name contraints -p 80:80 --contraint 'node.labels.mynode == testnode' --replicas 3 httpd # using labels and contraints you can restrict the service create to particular nodes
+	
 
+Lecture: Convert an Application Deployment into a Stack File Using a YAML Compose File with 'docker stack deploy'
+-----------------------------------------------------------------------------------------------------------------
+ # Installing docker compose
+   	-  yum install -y python-pip
+	-  pip install --upgrade pip
+	-  pip install docker-compose
+
+-- docker compose is used to build, and deploy services using a YAML file (docker-compose.yml). 
+-- In the docker file we can define the images,we need to build and and services required for the build
+-- for example lets build out a container using a regular Dockerfile, as below
+	#simple server
+	FROM centos:latest
+	LABEL maintainer="c"
+
+	RUN yum install -y httpd
+	RUN echo "Our Container Website" >> /var/www/html/index.html
+
+	EXPOSE 80
+
+	ENTRYPOINT apachectl -DFOREGROUND
+	
+-- building this as image using regular docker build would be 
+	- docker build -t myhttpd:v1 .
+-- Lets make sure, that the build is working as expected by builing and starting the container
+-- Now. lets use docker-compose.yml to build a above image, create 2 webservices and 1 nginx service as load-balanacer
+-- Ensure that you have Dockerfile and docker-compose.yml is same directory. Below is how the docker-compose.yml looks for the above mentioned scenario
+	    version: '3' # version 3 would be docker-composer version
+            services: 
+              apiweb1:
+                      image: myhttpd:v2
+                      build: .
+                      ports:
+                         - "81:80"
+              apiweb2:
+                      image: myhttpd:v2
+                      build: .
+                      ports:
+                         - "82:80"
+              load-balancer:
+                      image: nginx:latest
+                      ports:
+                         - "80:80"	
+-- once the above docker-composer.yml file is formed, use the below command to build and deploy services
+  		- docker-compose up -d	
+   # However, this build and deploy all the services on the same node in the swarm cluster farm. hence we need to use docker stack deploy
+-- docker-compose down --volumes is used to stop all services  started using docker-composer
+-- docker stack deploy --compose-file docker-compose.yml <service_name> t# this stack deploy will be used for deploying the service and distributing them onto different nodes in swarm farm
+*** stack deploy will not build the images. Hence we need to initially use docker-compose up -f to build the images and then use stack deploy

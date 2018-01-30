@@ -1,0 +1,58 @@
+Lecture: State the Difference Between Running a Container and Running a Service
+------------------------------------------------------------------------------
+
+	- Container is a specific and limited abstraction layer of application and OS
+	- Service is a solution to manage the container deployed in highly available, easily scalable cluster implementation
+	- difference,pro and cons of services over containers
+
+Demonstrate Steps to Lock (and Unlock) a Cluster
+-------------------------------------------------
+- Locking and unlocking of swarm cluster required to have an extra security on the system
+- Once the cluster is locked, and docker service is restarted, you will not be able to start perform an swarm operations
+- Docker service will be started, but the not swarm service.
+	docker swarm init --autolock # Lock the cluster during the swarm initiation
+	docker swarm update --autolock=true # for existng cluster
+	-- note the above output to file or password manager
+	-- restart the docker service
+	docker nodes ls will not list anything as it is locked
+	docker node unlock # Use this unlock the swarm
+	docker swarm unlock-key  # If the swarm is already unlocked, use this command to get the swarm key
+	docker swarm update --autolock=false # disable lock for swarm
+	docker swarm unlock-key --rotate # rotate the unlock key
+	
+
+Lecture: Extend the Instructions to Run Individual Containers into Running Services Under Swarm and Manipulate a Running Stack of Services
+------------------------------------------------------------------------------------------------------------------------------------------
+	- docker images # List all images
+	- docker node ls # Swarm Infra, all managers, and workers
+	- docker service ls # Services running on different swarm
+	- docker pull httpd
+  	- docker run -d --name webservice_test httpd
+	-- Issue with single container	
+		- networking is limited that hosts
+		- network routing when accessing outside of that network
+		- less fault tollorent 
+	-- When using service you can overcome all the network routing using mesh routing and orchestration of multiple container 
+	- docker service create --name webserver_docker_service -p 80:80 httpd # basic command to start the web service with 1 replicae
+	- docker service ls # list service running on the swarm
+	- docker service ps <service_name> # details of the service like name, replicas on what nodes etc.
+	**** Even though the service is running only 1 node, all the nodes swarm will be able provide the response services ********
+	- docker service create and update # Refer the documentation
+	- docker service update --replicas 3 webserver_docker_service # scale the replicas to 3
+	- docker service update --replicas 10 --detach=false webserver_docker_service # will give visual representation on whats happening when the replicas are scaling and its progress. Its by default false
+	--- We can limit the system resource like cpu and memory for the service
+	# --limit-cpu=0.5 is for the service and --reserve-cpu=1 will be the max cpu it has
+	# -- Similarly as above --limit-memory=128m and --reserve-memory=256m
+		-- least memory that can limited is 4m
+	-- docker service update --limit-cpu=.5 --reserve-cpu=1 --limit-memory=128m --reserve-memory=256m  # limiting cpu and memory
+	-- We can limit the same for network, storage and so on...
+
+Increase and Decrease the Number of Replicas in a Service
+---------------------------------------------------------
+	-- docker service create --name webserver_docker_service -p 80:80 httpd # basic service with 1 replica by default for 1 httpd
+	-- docker service update --replicas 3 --detach=false webserver_docker_service # increase the replicas to 3
+	-- docker service create --name webserver_ngnix_service -p 5901:80 nginx # basic service with 1 replica by default for nginx
+	-- docker service ls # list all the services and number of replicas
+	-- docker service scale webserver_ngnix_service=3 # scale switch also can be used to increase or decrease replicas
+	-- docker service scale webserver_ngnix_service=2 webserver_docker_service=2 # with scale you can increase or decrease replicas for multiple services at once
+

@@ -1,0 +1,13 @@
+Exercise: Pulling a Docker Image from a Repository and Tagging It Locally
+NOTE: Although you may use any Linux Academy Cloud Server and distribution that is available to complete these exercises, the course demonstrations, and the provided solutions are all using CentOS 7 executing commands with the 'user' account. NOTE: You can also use the 'Docker Certification' Lab Server and skip the initial installation and setup steps if you feel comfortable with the process.
+1. Install Docker and configure it so that it is running and will automatically start on boot.
+	- yum update -y && yum install -y docker-ce devicemapper
+	- systemctl enable docker and systemctl start docker
+2. Using the appropriate Docker commands pull the latest 'Ubuntu' image from the repository so that it is available for container instantiation on your local system.
+	- docker pull Ubuntu:latest
+3. Display the images currently installed on the local system to confirm that the 'Ubuntu' image is available from the prior step.
+	- docker images
+4. Tag the 'ubuntu:latest' image that you have downloaded so that you can refer to it with a shorter name. Choose to tag the image with the name and tag 'my:ubuntu'
+	- docker image tag ubuntu:latest my:ubuntu
+5. Display the resulting image list on your system to confirm the previous comman
+	- docker images

@@ -56,3 +56,28 @@ Increase and Decrease the Number of Replicas in a Service
 	-- docker service scale webserver_ngnix_service=3 # scale switch also can be used to increase or decrease replicas
 	-- docker service scale webserver_ngnix_service=2 webserver_docker_service=2 # with scale you can increase or decrease replicas for multiple services at once
 
+Lecture: Running Replicated vs. Global Services
+---------------------------------------------------------
+	--Replicated : service create by default it creates one replica and we can scale
+		- docker service create --name webserver_docker_service -p 80:80 httpd #
+		- docker service scale webserver_ngnix_service=3
+	-- Global : In global, we don't mention any replicas, by default 1 replica is installed on each node available in swarm
+
+		- docker service create --name webserver_ngnix_service -p 5901:80 --mode global nginx 
+
+	-- docker service ls # below is how the MODE is shown 	 
+		ID                  NAME                       MODE                REPLICAS            IMAGE               PORTS
+		rpnytbpls0t8        webserver_docker_service   replicated          1/1                 httpd:latest        *:80->80/tcp
+		vzh69j2yw47r        webserver_ngnix_service    global              4/4                 nginx:latest        *:5901->80/tcp
+	-- when run as global mode, when a new node is added it automatically scales the service to another node
+	-- once mode glocal mode is selected, you can update the service using docker service update comand
+
+Lecture: Demonstrate the Usage of Templates with 'docker service create'
+-----------------------------------------------------------------------
+	-- tempalates can used for hostnames, mounts, and environments in service create
+	-- certainly can be used for templateIDs
+	- docker service create --name myweb --hostname="{{.Node.ID}}-{{.Service.Name}}" httpd
+  	- docker service ps --no-trunc <servicename>
+	- docker inspect --format="{{.Config.Hostname}}" <Service_name>.1.<ID>
+
+

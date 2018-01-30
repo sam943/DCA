@@ -135,3 +135,37 @@ Lecture: Convert an Application Deployment into a Stack File Using a YAML Compos
 -- docker-compose down --volumes is used to stop all services  started using docker-composer
 -- docker stack deploy --compose-file docker-compose.yml <service_name> t# this stack deploy will be used for deploying the service and distributing them onto different nodes in swarm farm
 *** stack deploy will not build the images. Hence we need to initially use docker-compose up -f to build the images and then use stack deploy
+
+
+Lecture: Understanding the 'docker inspect' Output
+--------------------------------------------------
+ 	- docker run -d --name testweb httpd # start the container
+	- docker container inspect testweb # insepct will full Json
+ 	- docker container inspect testweb | grep IPAdd # grep Ip address
+ 	- docker container inspect testweb --format "{{.State.Status}}" # Parse through JSON
+	- docker container inspect testweb --format "{{.State.Paused}}"
+	- docker container inspect testweb --format "{{.State}}"
+	- docker container inspect testweb --format "{{json .State}}" # get the keys and values of state in json format
+	- docker container inspect testweb --format "{{json .Config}}" | jq . # use jq for pretty structure 
+
+Lecture: Identify the Steps Needed to Troubleshoot a Service Not Deploying
+--------------------------------------------------------------------------
+- Check 
+	- docker node ls
+	- docker service ps <servicename>
+	- docker seervice inspect <servicename>
+	- docker ps ? is your cluster is locked ? if restarted the cluster, you need to unlock
+	- recently restoration on swarm ?
+	- recently updated docker ?
+	- SELinux issues ? 'setenforce 0' ?
+	- Previleages/permissions on filesystem 
+	- CPU/Mem/Disk requirements ?
+	- Routing - Make sure that end points using the service are on same network
+	- Firewall 
+	- rule out environment issues
+
+	
+	
+
+
+

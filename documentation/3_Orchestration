@@ -164,8 +164,29 @@ Lecture: Identify the Steps Needed to Troubleshoot a Service Not Deploying
 	- Firewall 
 	- rule out environment issues
 
-	
-	
+Lecture: How Dockerized Apps Communicate with Legacy Systems
+------------------------------------------------------------
+	- Revisit if required
 
+Lecture: Paraphrase the Importance of Quorum in a Swarm Cluster
+---------------------------------------------------------------
+	- Swarm have 1 to N manager nodes in it.
+	- Raft Consensus Algorithm is used to manage the swarm state. Using this 'Consensus' methid amongst the management nodes is designed to be sure that in the event of a failure of any manager, any other manager wil have enough information stored on it to continue to operation the swarm as expected.
+	- Raft tolerates up to N-1/2 failures and requires a majority(quorum) of (N/2) + 1 to agree on any new instructions that are proposed to the cluster for execution
+	- requirments for managers
+		- Use Static IPs
+		- Immediately replace Failed Managers
+		- Distribute management nodes for High Availability
+		- Monitor Swarm Health
+	        - Backup and Recovery plan for Swarm
+		- Use a minimum of 3 availability zones to distribute managers
 
+			3 nodes -> 1-1-1
+			5 nodes -> 2-2-1
+			7 nodes -> 3-2-2
+			9 nodes -> 3-3-3
+
+		- Run 'Manager Only' Nodes
+		- docker node update -availabiloty drain [node]
+		- docker service update --force (redistribute the load)
 

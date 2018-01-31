@@ -1,0 +1,56 @@
+Lecture: State Which Graph Driver Should Be Used on Which OS
+------------------------------------------------------------
+Storage drivers
+	- if you are usng the contianers the way the are intented, you will be storing ;ittle to no data in a contianer writerable layer.
+	- Docker volumes are the more appropriate destinations so that the container remains portable.
+
+However, there are some scenarios where writing the container storage layer is a necessity and you will need to choose an appropriate storage driver that is both performant ad supported on your implementation
+
+	- Docker EE offically supported by 
+		CentOs - devicemapper
+		OEL    - devicemapper
+		RHEL   - devicemapper, overlay2
+		SUSE   - btrfs
+		Ubuntu - aufs3
+
+        - Docker CE offically supported by
+                CentOs - devicemapper,vfs
+                OEL    - devicemapper,overlay2
+                RHEL   - devicemapper, overlay2
+                SUSE   - btrfs
+                Ubuntu - aufs3,devicemapper,overlay2,overlay,vfs
+		Fedora - vfs,devicemapper,overlay2,overlay
+
+Lecture: Summarize How an Image Is Composed of Multiple Layers on the Filesystem
+--------------------------------------------------------------------------------
+	docker image is builtup  from a series of layers, each representling a sing;e insttruction in the images Dockersfile.Every layer except for the last, is a read only layer.
+
+Lecture: Describe How Storage and Volumes Can Be Used Across Cluster Nodes for Persistent Storage
+-------------------------------------------------------------------------------------------------
+	- The storage can't be used across cluster nodes in general
+	-- when you a "docker volume ls", there are 2 different driver
+		- local and cloudstorage drivers
+		- local is docker native and cloudstorage is meant for the 
+
+	- Lets say, we have create mount with docker volume create command as below
+		docker volume create my-mount
+  		docker volume inspect my-mount | more
+	- Then if you try to deploy a service, with same mount across swarm cluster, with the below command, you notice that the mount is available only on the node it is create but not on all
+	   and changes to file inside the mount will not replicated to other nodes
+  		 docker service create --name testmount -p 80:80 --mount source=my-mount,target=/internal-mount --replicas 3 httpd
+
+Lecture: Identify the Steps You Would Take to Clean Up Unused Images (and Other Resources) On a File System (CLI)
+----------------------------------------------------------------------------------------------------------------
+	docker system prune
+	WARNING! This will remove:
+        - all stopped containers
+        - all networks not used by at least one container
+        - all dangling images
+        - all build cache
+	Are you sure you want to continue? [y/N] ?
+	
+	docker system prune --volumes # prunes all the volumes
+	
+	docker system prune -a --volumes # prunes all the unwanted and not used docker objects
+	
+	-- Running docker system prune is not cluster aware command, you will need to run the same command on the nodes in the cluster to make sure everything is cleaned up

@@ -1,0 +1,16 @@
+NOTE: This exercise can be completed on the Linux Academy Cloud Servers running CentOS 7. You will need a total of THREE Cloud Servers running CentOS 7 started to complete this exercise and you will need to have installed Docker and started the Docker service on each one. Although we are performing the tasks as the 'user' account on each server, you may use 'root' or any other user account with sufficient sudo privileges. Finally, add EACH Cloud Servers name and PRIVATE IP ADDRESS to the /etc/hosts file on ALL THREE servers. We need to use the private IP addresses for this exercise.  NOTE: You can use the Linux Academy 'Docker Certification' Cloud Server in lieu of completing a fresh installation and configuration of your environment.
+
+1. You will need to choose one of the three servers you have provisioned as the 'master' or 'manager' node in your cluster. The other two will function as nodes. On your manager, initialize the swarm cluster for your environment with the appropriate Docker command.
+	- docker swarm init --advertise-addr <manager_Ip>
+
+2. Clear your screen, do NOT note the token value. In order to demonstrate how to retrieve the previously displayed token, from your terminal, issue the command on your master that will retrieve the token value and command that each node will need to join the swarm cluster.
+	- docker swarm join-token <worker or manager >
+
+3. On each of your other two node servers, join the cluster (i.e. the manager) that you initialized above using the necessary token.
+	- docker swarm join --token <SWARM TOKEN> <manager_ip>:2377
+
+4. On your manager node, display all of the nodes within your cluster.
+	docker node ls
+
+5. On your manager node, display ALL information about the system that Docker can see along with the details of the cluster name, management nodes and nodes joined.
+	docker info

@@ -1,0 +1,20 @@
+Exercise: Reassign a Swarm Worker to Manager
+===========================================
+
+NOTE: Although you can complete this exercise using Ubuntu 16.04LTS or CentOS 7 Linux Academy Cloud Servers (which you would then have to have installed Docker CE as detailed in the course already), we have made available a special pre-configured 'Docker Certification' CentOS 7 system for your use with the course and all exercises.
+
+You will be using a THREE NODE Docker Swarm (a Single Manager and Two Worker Nodes). If you do not have that set up at this point, please see the exercise in doing so or complete that setup before you begin this exercise.
+
+Your swarm needs to be reconfigured, the first step of which will be to reassign existing resources. Your tasks are:
+
+1. On ONE of the worker nodes, force the node to leave the swarm
+	-- on worker node run docker swarm leave --force
+
+2. Find the command and token on the manager node to allow other managers to join the swarm
+	-- docker swarm join-token manager
+
+3. Execute the command in the previous step so that your swarm will have an additional manager node
+	-- docker swarm join --token <token> <Manager_IP>:2377
+
+4. Verify the node has been promoted to manager and is reporting as such in the cluster information
+	-- docker node ls

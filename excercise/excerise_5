@@ -1,0 +1,24 @@
+NOTE: This exercise can be completed on the Linux Academy Cloud Servers running CentOS 7. You will need a total of THREE Cloud Servers running CentOS 7 started to complete this exercise and you will need to have installed Docker and started the Docker service on each one. Although we are performing the tasks as the 'user' account on each server, you may use 'root' or any other user account with sufficient sudo privileges. Finally, add EACH Cloud Server's name and PRIVATE IP ADDRESS to the /etc/hosts file on ALL THREE servers. We need to use the private IP addresses for this exercise. To pick up where this exercise begins, you will either need to install a manager and two nodes for use in your swarm OR use the servers from the previous exercise here - https://linuxacademy.com/cp/exercises/view/id/601/module/150 -  NOTE: You can use the Linux Academy 'Docker Certification' Cloud Server in lieu of completing a fresh installation and configuration of your environment.
+
+Execute the appropriate command on your manager to display the current manager and node list in your swarm cluster
+	-- docker node ls
+
+Create a service in your swarm cluster with the following attributes:
+	Name the application "devweb"
+	Remap/Redirect the underlying host environment's port 80 to the service application port 80
+	Base the service off of the default 'httpd' image that is available on the Docker Hub (default repository)
+	
+	-- docker service create --name devweb -p 80:80 httpd:latest
+
+Display the current services that are running on your cluster with the number of replicas each has
+	-- docker service ls
+
+Execute the command that will tell you which node the service is currently running on
+	-- docker service ps devweb
+
+Scale up your service so that it is running THREE replicas and verify by listing the nodes that the service is running on in your environment
+	-- docker service update devweb --replicas 3 or docker service scale devweb=3
+
+Scale back down your service so that it is running TWO replicas and verify by listing the nodes that the service is running on in your environment
+	-- docker service update devweb --replicas 2 or docker service scale devweb=2 
+	-- docker service ps devweb

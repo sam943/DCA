@@ -1,0 +1,25 @@
+Exercise: Creating and Working With Volumes
+NOTE: Although you can complete the following steps using any Linux Academy distribution and version that supports Docker Community Edition 1.21+, the solutions provided were taken from a CentOS 7 Cloud Server.  NOTE: You can use the Linux Academy 'Docker Certification' Cloud Server in lieu of completing a fresh installation and configuration of your environment.
+
+1. Using the appropriate Docker command, create a storage volume for use by your containers, call the volume 'test-volume'
+	-- docker volume create test-volume
+2. Display all the Docker storage volumes that exist on your local system
+	-- docker volume ls
+3. Execute the Docker command that will allow you to display all the attributes of that newly created 'test-volume'
+	-- docker volume inspect test-volume
+4. Display the location on the host file system where that 'test-volume' exists and note the permissions
+	-- i
+	docker volume inspect test-mount
+	[
+    		{
+	        "CreatedAt": "2018-01-31T09:14:40-08:00",
+        	"Driver": "local",
+	        "Labels": {},
+        	"Mountpoint": "/var/lib/docker/volumes/test-mount/_data",
+	        "Name": "test-mount",
+	        "Options": {},
+	        "Scope": "local"
+	    }
+	] 
+5. Remove the newly created 'test-volume' and then run the command to verify that the volume has been deleted
+	-- docker volume rm test-mount

@@ -106,6 +106,67 @@ Lecture: Deploy a Service on a Docker Overlay Network
 	-- for example, if you trying to access the service through curl or browser or elink from the swarm manager, where actually you created the network, you will able to access it. But that not the same case with worker node. You will not be able to access thesame from worker node
 	-- what overlay network can do in a cluster is that it enable the intercommunication within the container. I.e. It enable network response between the containers
 
+Lecture: Describe the Built In Network Drivers and Use Cases for Each and Detail the Difference Between Host and Ingress Network Port Publishing Mode
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+	-- Docker Network Drivers
+		- Bridge
+		- None
+		- Host
+		- Overlay
+		- Ingress
+		- Docker Gateway Bridge
+	-- Host and Ingress are required for Certification
+
+	Bridge:
+	======
+		- Simple and Default on Standalone docker hosts
+		- Private network internal to host system and container deployed on this network can communicate:	
+		- External access is granted by port exposure of container service or use static route on the host.
+	None:
+	====
+		- Used when container needs no network acccess and can be accessed only on the host
+		- Not commonly used
+	Host:
+	====
+		- Host-only networking
+		- accessable via underlying hosts
+		- access to services can only be provided by exposing container ports on the host system 
+		
+	Overlay:
+	=====
+		- Allow communication between all docker daemon on the swarm cluster
+		- swarm scope driver and extends to all daemons in swarm cluster
+		- Assign a service to overlay network, and when the service starts the same is extended to other worker nodes
+		-default mode of swarm communication
+	Ingress:
+	=======
+		- Special overlay network that load balances network traffic among a given service working nodes
+		- Maintains a list of all IP address from nodes that participate in that service and when a request comes in, routes to one of them for the indicates services
+		- Provides the 'routing mesh' that allows services to be exposed to the external network without having a repica running on every node in swarm
+		- Basically, even if service is running with one replica on any nodes in swarm cluster , and if you try to access the service from any node, 'routing mesh' has the ability to route the traffic to and provide the response.
+
+	Docker Gateway Bridge:
+	=====================
+		- Special bridge network that allows overlay networks access to an individual docker daemon's physical network
+		- Every container run within a service is connected to the local docker daemon's hostnetwork
+		- Automatically create when a sarm is initializd or joined
+	
+	
+ Port Publishing Mode
+	Host:
+	====
+
+		port for container are only available on the underlying host system and NOT available for services outside of the host where the instances exists
+		Used in single host environments or in environmens where you need complete control over routing
+		You are responsible for knowing where all instances are at all times, controlled with 'mode=host' in deployment
+	Ingress:
+	=========
+		Since it is responsible for "routing mesh", it makes all published ports available on all hosts participating in the clusrer so that the service is accessable from every node 
+	
+	
+
+
 
 	
 	

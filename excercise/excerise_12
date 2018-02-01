@@ -1,0 +1,16 @@
+NOTE: Although you can complete this exercise using Ubuntu 16.04LTS or CentOS 7 Linux Academy Cloud Servers (which you would then have to have installed Docker CE as detailed in the course already), we have made available a special pre-configured 'Docker Certification' CentOS 7 system for your use with the course and all exercises.
+You are being asked to run an Nginx container listening on port 80, but that port is not available on the host. Complete the following tasks:
+
+1. Using the appropriate Docker CE commands, download the latest 'nginx' webserver image from Docker Hub.
+	-- docker pull nginx:latest
+
+2. Instantiate a container based on the 'nginx' image from the previous step. This container should have the following characteristics:
+
+  * when started, the container should run in 'detached' mode
+  * name the container 'nginxtest'
+  * use the appropriate option to allow Docker to map all container service ports to random host ports over 32768
+  * the container is based on the 'nginx' image from step one
+	-- docker container run -d --name "nginxtest" -P nginx
+
+3. Using the appropriate Docker command, find the CONTAINER IP address ONLY (use the aforementioned appropriate command and JUST display the IP address using its built in options)
+	-- docker container inspect nginxtest --format "{{.NetworkSettings.Networks.bridge.IPAddress}}"

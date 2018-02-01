@@ -1,0 +1,33 @@
+Hands-on Lab: Working with the DeviceMapper Storage Driver
+----------------------------------------------------------
+
+Overview
+Your development team has been working on their understanding of Docker in general and Docker Swarms in particular. They are experimenting with different ways of understanding and optimizing storage on the underlying hosts. As a result, they have asked for your assistance in comparing traditional host based default storage on a Docker host with the 'devicemapper' storage driver on a second Docker host.
+
+They have provided you with the credentials to connect to two hosts for this activity. You have been asked to install and configure Docker, enabled so that it starts on boot, on both hosts. 
+
+On the first host, they would like the default storage subsystem to be left as is. On the second host, they would llike you to change the Docker storage subsystem to the 'devicemapper' driver. This will enable them to compare image and container storage utilization using LVM thin provisioning vs. standard storage.
+
+On each host, once configured, install the following images for their use and then turn the systems over to them once you verify their installation:
+
+* CentOS (Latest)
+
+* HTTPD
+
+* Ubuntu (Latest)
+
+- Steps on First Host
+        -- yum update -y && yum install install -y devicemapper lvm docker-ce
+        -- systemctl enable docker && systemctl start docker
+        -- docker ps
+        -- docker pull centos:latest && docker pull httpd:latest  && docker pull ubuntu:latest
+	-- docker info | grep Storage
+
+- Steps on Second Host
+	-- yum update -y && yum install install -y devicemapper lvm docker-ce
+	-- systemctl enable docker && systemctl start docker
+	-- docker ps
+	-- touch /etc/docker/daemon.json && echo "{ \"storage-driver\" : \"devicemappaer\" }" >> /etc/docker/daemon.json
+	-- ls -latr /var/lib/docker/devicemapper or ls -latr /var/lib/docker | grep devicemapper
+	-- docker info | grep Storage
+	-- docker pull centos:latest && docker pull httpd:latest  && docker pull ubuntu:latest

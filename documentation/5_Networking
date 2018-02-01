@@ -1,0 +1,148 @@
+Lecture: Create a Docker Bridge Network for a Developer to Use for Their Containers
+-----------------------------------------------------------------------------------
+ 	-- docker containers have to be resided on network to able to communicate to the host and system
+	-- docker by default installs a bridge network with bride driver.
+	-- docker network ls # will provide all the networks available and typical network interfaces on docker host with swarm manager is below
+		NETWORK ID          NAME                    DRIVER              SCOPE
+		2a2a716a5cde        bridge                  bridge              local
+		b7d38e08af0c        docker_gwbridge         bridge              local
+		08872031334c        host                    host                local
+		y9w89q8lp40f        ingress                 overlay             swarm
+	-- docker network inspect <Network Name> # Provide the details of network like subnet, options available and so..
+        -- docker network inspect bridge
+            [
+                {
+                    "Name": "bridge",
+                    "Id": "2a2a716a5cdefd64b49f2d5b85dfe2744c868ef469edd914651ba69e844fe6b7",
+                    "Created": "2018-01-31T22:08:07.969964386-08:00",
+                    "Scope": "local",
+                    "Driver": "bridge",
+                    "EnableIPv6": false,
+                    "IPAM": {
+                        "Driver": "default",
+                        "Options": null,
+                        "Config": [
+                            {
+                                "Subnet": "172.17.0.0/16",
+                                "Gateway": "172.17.0.1"
+                            }
+                        ]
+                    },
+                    "Internal": false,
+                    "Attachable": false,
+                    "Ingress": false,
+                    "ConfigFrom": {
+                        "Network": ""
+                    },
+                    "ConfigOnly": false,
+                    "Containers": {},
+                    "Options": {
+                        "com.docker.network.bridge.default_bridge": "true",
+                        "com.docker.network.bridge.enable_icc": "true",
+                        "com.docker.network.bridge.enable_ip_masquerade": "true",
+                        "com.docker.network.bridge.host_binding_ipv4": "0.0.0.0",
+                        "com.docker.network.bridge.name": "docker0",
+                        "com.docker.network.driver.mtu": "1500"
+                    },
+                    "Labels": {}
+                }
+            ]
+	-- Lets start a container with httpd on the default network
+		-- docker run -d --name "testweb1" -p 8081:80 httpd # on default network with 8081 local port
+		-- docker inspect --format="{{.NetworkSettings.Networks.bridge.IPAddress}}" testweb1 # verify the IP Address
+	-- Lets create an new user network
+		-- docker network create --dricer=bridge --subnet=192.168.1.0/24 --opt "com.docker.network.driver.mtu"="1501" develop01 # command to create a network
+	-- Verify if the network is available through docker nework ls and docker network inspect develop01
+	-- Now we can connect the existing and running container to different network user docker network connect command. However, you can only connect an running container to user created network but not the default/system created one
+	-- Below command will connect the same container to different network
+		-- docker network connect --ip=192.168.1.10 develop01 testweb1 
+	-- Now the container is available on both the Existing  default network and as well as new network. Run the inpect command to verify container IP Address
+		-- docker inspect --format="{{.NetworkSettings.Networks.bridge.IPAddress}}" testweb1
+			curl http://192.168.1.10 # new user defined network
+		-- docker inspect --format="{{.NetworkSettings.Networks.develop01.IPAddress}}" testweb1
+			curl http://172.17.0.2 # default network
+	-- Now you can disconnect one container from existing network using docker network disconnect <network_name> <container_name/ID>
+		-- docker network disconnect bridge testweb1
+		-- -- docker inspect --format="{{.NetworkSettings.Networks.bridge.IPAddress}}" testweb1 # this will return null
+
+
+Lecture: Configure Docker for External DNS
+------------------------------------------
+-- By default, the dns for containers use local host dns configuration available on /etc/resolv.conf
+	  -- docker run -d --name "testweb" httpd 
+	  -- docker exec -it httpd /bin/bash && cat /etc/resolv.conf 	
+-- However, if you want to change it for a container you can pass --dns switch and change for a container
+	  -- docker run -d --name "testweb" --dns=8.8.8.8 --dns=8.8.4.4 httpd
+-- But if you need to change for any container that gets created, you need to add dns entry into /etc/docker/daemon.json
+	  -- In /etc/docker/daemon.json 
+		{
+			"dns" : ["8.8.8.8",8.8.4.4"]
+		}
+	  -- restart docker (systemctl restart docker)
+	  -- docker run -d --name "testweb" httpd
+	  -- docker exec -it httpd /bin/bash && cat /etc/resolv.conf
+
+Publish a Port So That an Application Is Accessible Externally and Identify the Port and IP It Is On
+----------------------------------------------------------------------------------------------------
+	
+	 -- docker run -d --name "testweb" -P httpd
+		-P : Inspect the image doc and find the port and map a random localhost to actual container port
+	 -- docker run -d --name "testweb" -p 80:80 httpd or docker run -d --name "testweb" -publish 80:80 httpd 
+		-p : Defined local host to known container port	
+
+Lecture: Deploy a Service on a Docker Overlay Network
+-----------------------------------------------------
+-- Learn how subnet works ?
+	-- docker network ls # existing networks
+	-- ingress can exist only once per network
+	-- Lets create a docker network with overlay
+		-- docker network create --driver=overlay --subnet=192.168.1.0/24 overlay0
+	-- docker network inspect overlay0 
+		-- overlay0 is only available in manager but not on other managers or workers.
+		-- to build out the same network on other nodes to we need start the service with same network in the cluster and replicas
+	-- docker service create --name testweb3 -p 80:80 --network=overlay0 --replicas 3 httpd
+	-- once the service is started the overlay0 is available on the all worker nodes as well
+	-- however, using the overlay0 network IP, you will not able to access service dirctly from the worker node
+	-- for example, if you trying to access the service through curl or browser or elink from the swarm manager, where actually you created the network, you will able to access it. But that not the same case with worker node. You will not be able to access thesame from worker node
+	-- what overlay network can do in a cluster is that it enable the intercommunication within the container. I.e. It enable network response between the containers
+
+
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,27 @@
+NOTE: Although you can complete this exercise using Ubuntu 16.04LTS or CentOS 7 Linux Academy Cloud Servers (which you would then have to have installed Docker CE as detailed in the course already), we have made available a special pre-configured 'Docker Certification' CentOS 7 system for your use with the course and all exercises.
+You will use Docker CE to create a container that contains a link to a mount on the host (and it's contents). Please complete the following tasks:
+
+1. Create a directory in your home directory called 'content'. Within this directory, place a file called 'index.html' containing any text you wish.
+		-- mkdir content && touch $(pwd)/content/index.html && echo "This is excercise 11" >> $(pwd)/content/index.html
+
+2. Using the appropriate Docker CE command, download the image called 'httpd:latest' to your system.
+		-- docker pull httpd:latest
+
+3. Install the 'elinks' web browser to complete testing of your site 
+		-- yum install -y elinks
+
+4. Instantiate a container on this single host with the following characteristics:
+  * name the container 'testweb'
+  * map container port 80 to the host port 80
+  * create a bind mapping from the container directory of /usr/local/apache2/htdocs to the local host directory you created above using the complete path
+  * base the container on the 'httpd' image downloaded above
+  * run the contained in 'detached' mode
+		-- docker container run -itd --name "testweb" -p 80:80 -v $(pwd)/content/:/usr/local/apache2/htdocs/ httpd
+
+5. Verify the container is running
+		-- docker ps && docker inspect <container_id>
+
+6. Use 'elinks' to connect to your local IP over port 80 and verify the created index file created above is displayed
+		-- elinks http://172.17.0.2
+		-- Something cool and instresting
+			docker inspect `docker ps -q` --format "{{.NetworkSettings.Networks.bridge.IPAddress}}" | xargs -I {} curl {}

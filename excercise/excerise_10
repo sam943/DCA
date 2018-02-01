@@ -1,0 +1,44 @@
+NOTE: Although you can complete this exercise using any Linux Academy Cloud Server distribution and version available that has Docker CE installed and running, the potential solutions shown in the 'solutions' tab are taken from a CentOS 7 Cloud Server.  NOTE: You can use the Linux Academy 'Docker Certification' Cloud Server in lieu of completing a fresh installation and configuration of your environment.
+
+1. Create a Docker volume called 'http-files' and then list all volumes to confirm it was created
+	-- docker volume create http-files
+	-- dokcer volume ls	
+
+2. Execute the appropriate Docker command to display ALL information on the 'http-files' volume, make a note of the filesystem location that volume is linked to on your host
+	-- docker volume inspect http-files
+
+		[
+		    {
+        		"CreatedAt": "2018-01-31T22:10:06-08:00",
+		        "Driver": "local",
+		        "Labels": {},
+		        "Mountpoint": "/var/lib/docker/volumes/http-files/_data",
+		        "Name": "http-files",
+		        "Options": {},
+		        "Scope": "local"
+    		    }
+		]	
+
+3. Pull the 'httpd' image from the standard Docker repository and verify it was installed locally
+	-- docker pull httpd
+
+4. Create an 'index.html' file of your choosing and copy it to the HOST directory that your 'http-files' volume is linked to (obtained in Step #2 above)
+	-- mv index.html /var/lib/docker/volumes/http-files/_data 
+	-- echo "excersice_10" >> /var/lib/docker/volumes/http-files/_data/index.html
+
+5. Start a container based on the 'httpd' image with the following characteristics:
+
+  - the container should run in the background (i.e. you are not connected to it in the current terminal)
+  - name the container 'test-web'
+  - associate the created volume 'http-files' with the container directory path of /usr/local/apache2/htdocs
+	-- docker run -i -t -d --name test-web -p 80:80 -v /var/lib/docker/volumes/http-files/_data:/usr/local/apache2/htdocs httpd
+
+6. Using the appropriate Docker command, find out the container's IP address and note it
+	-- docker inspect <container-id> | grep IPAddress
+
+7. Execute the 'curl' command against that IP address to display the Apache website running on the container, verify the output is from your created 'index.html' file
+	-- curl -v http://172.17.0.2/index.html
+
+8. Make a change to the 'index.html' file on the container's host and save the file. Rerun the 'curl' command to verify the container's website is now displaying the new value
+	-- curl -v http://172.17.0.2/index.html
+

@@ -1,0 +1,16 @@
+In their continuing quest to containerize their new Web-based API, the development team would like to experiment with containers that use the underlying host's storage system in order to be able to do quick site builds without having to recycle the containers themselves.
+
+As a result, you have been provided the credentials and access to a single development server. They have asked that you install Docker CE and configure it so that it starts on boot. Once done, please pull down the latest 'httpd' image from the default repository to the local filesystem and verify it is present.
+
+Create two directories that will be designed to house two separate versions of their test website (call them 'version1' and 'version2' for example, however, you can use whatever name you wish). Once created, for testing, create a simple 'index.html' file in each so that you can easily differentiate each directory when viewed.
+	-- mkdir version1 version2 && touch version1/index.html version2/index.html
+
+Finally, instantiate two containers. Name them 'test-web1' and 'test-web2' that are based on the 'httpd' image installed earlier. Be sure to redirect the underlying directories (version1 and version2 respectively if those are the directories you created), so that each container has access to one of those directories as the default site directory (for this image, that would be '/usr/local/apache2/htdocs') within the container.
+	-- docker run -d --name "test-web1" -v $(pwd)/version1:/usr/local/apache2/htdocs httpd
+	-- docker run -d --name "test-web2" -v $(pwd)/version2:/usr/local/apache2/htdocs httpd
+
+Verify that the directories are serving the content of each container using a text based web browser (like 'lynx' or 'elinks'). NOTE: You will have to obtain each container's assigned IP in order to complete your test, so be sure to use the appropriate command to get that information.
+	-- docker container inspect test-web1 --format "{{.NetworkSettings.Networks.bridge.IPAddress}}" | xargs -I {} elinks http://{}
+	-- docker container inspect test-web2 --format "{{.NetworkSettings.Networks.bridge.IPAddress}}" | xargs -I {} elinks http://{}
+
+Once you have completed that verification, you can turn the server over to your Dev Team for their testing and use.

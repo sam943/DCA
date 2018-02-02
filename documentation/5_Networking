@@ -163,6 +163,76 @@ Lecture: Describe the Built In Network Drivers and Use Cases for Each and Detail
 	Ingress:
 	=========
 		Since it is responsible for "routing mesh", it makes all published ports available on all hosts participating in the clusrer so that the service is accessable from every node 
+
+Lecture: Troubleshoot Container and Engine Logs to Understand Connectivity Issues Between Containers
+----------------------------------------------------------------------------------------------------
+	- System Level
+	- Service Level
+	- Container Level
+
+	system Level:
+	============
+		- docker daemon logs are available in /var/log/messages. but in ubuntu they are present in /var/log/daemon
+		-  grep [dD]docker /var/log/messages
+			- verify Node join events
+			- connectivity issues
+			-
+	Container Level:
+	===============
+		- docker container logs <container_id>
+
+	Service Level:
+	=============
+		service logs would be important, because the service has multiple replicas across different nodes in the swarm cluster
+		- docker service logs <service_name> # gives aggregate logs of all the nodes partiparting and service is running
+		- if there are no logs any of the container, then we can log on to individual node and get container logs using docker container logs <container_Id> to find the root cause
+
+Lecture: Understanding the Container Network Model
+--------------------------------------------------
+	- Implementation that formalizes how networking for containers is provided while allowing abstractions that are used to support multiple network drivers
+	- it is built on three main components
+Components:
+	- Sandbox :
+		Encompasses the network stack configuration, including management of interfaces, routing and DNS of 1 to N endpoints on 1 to N networks
+
+	- Endpoint
+		interfcces, switches, port etc
+
+	- Network :
+		a collection of endpoints such as bridges,routers etc
+
+	-- Object inside the network model include
+		- Network Controller
+		- Driver
+		- Network
+		- Enpoint
+		- Sandbox
+	Each of those having options and label and interacting with each other as specified
+i	-- Dokcer Networking and IPAM(Internet Protocal Address Management)
+		Managing address across multiple hosts on seperate physcal networks while providing routing to underlying swarm networks externally is the "IPAM Problem"
+
+Lecture: Understand and Describe the Traffic Types that Flow Between the Docker Engine, Registry and UCP Components
+-------------------------------------------------------------------------------------------------------------------
+	Communication Traffic between Docker Engine, UCP and DTR in a swarm env
+	Manager:
+		UCP manager
+		UCP agent
+		Docker EE
+	Worker:
+		UCP Worker
+		UCP agent
+		Docker EE
+	Worker:
+		DTR Services
+		UCP Worker
+		UCP Agent
+		Docker EE
+	Hierarchy if UCP and DTR
+
+		- Cloud Servers | Physical Servers | VMs
+		-- Docker EE
+		--- UCP
+		---- DTR | Services
 	
 	
 

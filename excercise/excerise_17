@@ -1,0 +1,23 @@
+NOTE: Although you can complete this exercise using Ubuntu 16.04LTS or CentOS 7 Linux Academy Cloud Servers (which you would then have to have installed Docker CE as detailed in the course already), we have made available a special pre-configured 'Docker Certification' CentOS 7 system for your use with the course and all exercises.
+Your company's DNS servers are having issues but you need to launch a web container that can resolve outside named resources. Your tasks are as follows:
+
+1. Using the Docker base image for Ubuntu, create a container with the following characteristics:
+  - Interactive
+  - Attached to Terminal
+  - Using Google Public DNS
+  - Named 'mycontainer1'
+	-- docker container run -it --dns="8.8.8.8" --dns="8.8.4.4" --name "mycontainer1" /bin/bash
+
+2. Exit the container from Step #1. Using the Docker base image for Ubuntu, create a container with the following characteristics:
+
+  - Interactive
+  - Attached to Terminal 
+  - Using Google Public DNS
+  - Using Domain Search "mydomain.local"
+  - Named 'mycontainer2'
+	-- docker container run -it --dns-search=mydomain.local" --name "mycontainer1" /bin/bash
+
+3. Exit the container from Step #2. List all the containers. List all characteristics inspected from 'mycontainer2' and then remove and verify removal of all containers.
+	docker ps
+	docker inspect mycontainer2
+	docker rm mycontainer2

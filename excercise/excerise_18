@@ -1,0 +1,29 @@
+Exercise: Create a New Bridge Network and Assign a Container To It
+
+1. Display existing Docker networks and names on your host
+
+		-- docker network ls
+
+2. Create a new network as follows:
+  * use the 'bridge' driver
+  * assigns IP addresses in the '192.168.1.0/24' network range
+  * uses a gateway address of 192.168.1.250
+  * called 'dev_bridge'
+
+		-- docker network create --driver=bridge --subnet=192.168.1.0/24 --gateway=192.168.1.250 dev_bridge
+
+3. Display all Docker networks on the host
+		
+		-- docker network ls
+		
+4. Pull the 'httpd' image and install locally
+		
+		-- docker pull httpd:latest
+
+5. Create a container called 'testweb' based on the image in the previous step as follows:
+  * assigned to new 'dev_bridge' network on start
+		
+		-- docker run -d --name "testweb" --network=dev_bridge httpd
+
+6. Using the appropriately formatted Docker command output, display the container's IP(s) to include the new network
+		docker container inspect testweb "{{.NetworkSettings.Networks.bridge.IPAddress}}"

@@ -30,3 +30,56 @@ Lecture: Identity Roles
 				- RESTRICTED CONTROL : Grants the ability to view and edit volumes,networks and images but cannot run servies or container on the running nodes. Restric the ability to mount a node directory or exec into running container
 				- SCHEDULER : Allow to view nodes ans schedule workloads. Need additional resources permissions to perform other tasks
 				- FULL CONTROL : Allowed to volumes,networks and images as well create containers and services without restrcition : They cannot see other users container or services
+
+Lecture: Configure RBAC and Enable LDAP in UCP
+	- Enabling LDAP in UCP
+		-From UCP -> Adminstration -> admin settings -> Authentication & Authorization -> LDAP Enabled = "YES | NO"
+		- Provide the details and test login
+
+	- Setting RBAC (ROLE BASED AUTH. CONTROL)
+		- You can create the roles other than default roles in UCP
+		- Create a Role -> Name="Contauiner-testers" -> Operations -> select the required operations -> create
+		- Now Create Grant -> Select the role -> Apply to user , team or organization in "Subjects" sections create the grant
+
+Lecture: Demonstrate Creation and Use of UCP Client Bundles and Protect the Docker Daemon With Certificates
+-----------------------------------------------------------------------------------------------------------
+	-- UCP Client Bundles are used for enabling the CLI between local machine/laptop to manage with UCP on CLI
+	-- In the user profile, we need to download client bundles into local machine where you have docker installaed
+	-- Unzip the downloaded cient bundle and execute eval $(<env.sh). This will get couple of Docker Environment variable like UCP server, cert path,etc and will give control over UCP based on your access to manage the swarm
+	-- If you admin or have full control you can create services on the swarm using UCP CLI from local machine.
+
+Lecture: Describe the Process to Use External Certificates with UCP and DTR
+---------------------------------------------------------------------------
+Using certificates from a Certificate Authority (like Verisign) is straightforward in your environment. We will show you where your new keys and certificates are installed in UCP.
+	- Certificate management is easy in UCP
+	- Generate the Certifcate from any CA using UCP hostname or CNAME using openssl
+	- Download the cert.pem,intermediate.pem and chain.pem and private.key A
+	- From UI, Admin Setting -> Certicates and Update CA Certificate(root cert), Server Certificate, private key -> save
+
+Lecture: Describe Default Docker Swarm and Engine Security
+----------------------------------------------------------	
+	Docker Engine Security
+	- The Host Kernel Support of namespaces and cgroups
+
+		Names provide isolcation to running containers so they cannot see or affect the other processes on the host. Namespaces provide an isloated, process, network and volume stack to enable that isolation		
+		Control groups implement resource management(allocating and reporting) to further minimize the effecr of a container on a host. As a result, both play a tole in minimizng various security risks such as denial of service attachs on container, privileage escations exploits etc.
+		
+	
+	- Limited attach surgface of the Docker daemon
+		The attach surface is affected by the fact that the daemon requires ROOT account privilegaes, so more care than normal should be applied when changing parameters and known secure default configuration
+		Even with trusted users given daemon for control, unknowingly malicious images with "docker load" is a concern
+
+	In addition to docker engine, swarm make heavy use of Overlay network model
+	
+	This Network model comes prepared with security and support for communication encryption(using the --opt encrypted whne creating network) model
+	
+	This Network model comes prepared with security and support for communication encryption(using the --opt encrypted whne creating network). But this doesn't support windows
+
+Lecture: Describe MTLS
+----------------------
+	What is Mutually Authenticated TLS ?
+		- learn heart bleed bug	
+		- MTLS is method used to communicate within the swarm
+		- Mutually Authenticaed TLS is implementeation that was chosed to secure that communication.
+		- Any time a swarm is initialized, self-signed certificate authority is generated and issues certificate to every node (manager or worker) to facilitate those secure communications
+		

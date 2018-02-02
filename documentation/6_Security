@@ -1,0 +1,32 @@
+Describe the Process of Signing an Image and Enable Docker Content Trust
+------------------------------------------------------------------------
+
+	- When you have private registery, and if you have enable entra security to ensure signing happens we can enabled the environment variable DOCKER_CONTENT_TRUST
+
+	- If you set DOCKER_CONTENT_TRUST=1, then if there is no validate certificate on client and build machine where you push the images, you will not able to push or pull images from registry
+
+	- To disable set DOCKER_CONTENT_TRUST=0
+
+Lecture: Demonstrate That an Image Passes a Security Scan
+---------------------------------------------------------
+	- On docker hub image scan can be used only private repositories that are non-free repos
+	- Scan will happen to check any vulanerbilities of the image, patches required
+	- Once the image is uploaded into docker hub/cloud the regsitry starts scanning the image and reports any issues observed in the component of the image
+
+Lecture: Identity Roles
+-----------------------
+	What types are roles are supprted in UCP
+		- 2 types of users	
+			- Administrators : Admin, and can do anything
+			- Regular Users : USers from full control to nothing
+		- Only Administrator can make changes to 
+			- Swarms
+			- User management
+			- Organization management
+			- team management
+			- Roles:
+				- NONE : No access to Swarm
+				- VIEW ONLY : View services,volumes, networks
+				- RESTRICTED CONTROL : Grants the ability to view and edit volumes,networks and images but cannot run servies or container on the running nodes. Restric the ability to mount a node directory or exec into running container
+				- SCHEDULER : Allow to view nodes ans schedule workloads. Need additional resources permissions to perform other tasks
+				- FULL CONTROL : Allowed to volumes,networks and images as well create containers and services without restrcition : They cannot see other users container or services

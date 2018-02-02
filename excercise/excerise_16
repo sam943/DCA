@@ -1,0 +1,28 @@
+Exercise: Create a Docker Service on Your Swarm and Expose Service Ports to Each Host
+-------------------------------------------------------------------------------------
+
+NOTE: Although you can complete this exercise using Ubuntu 16.04LTS or CentOS 7 Linux Academy Cloud Servers (which you would then have to have installed Docker CE as detailed in the course already), we have made available a special pre-configured 'Docker Certification' CentOS 7 system for your use with the course and all exercises.
+
+You will be using a THREE NODE Docker Swarm (a Single Manager and Two Worker Nodes). If you do not have that set up at this point, please see the exercise in doing so or complete that setup before you begin this exercise.
+
+The tasks that need to be completed include the following:
+
+1. Using the appropriate command, pull the latest 'httpd' image from Docker Hub.
+	docker pull httpd:latest
+
+2. Create a service on your cluster that meets the following requirements:
+
+  * name the service 'testweb'
+  * map the service web port of 80 to the underlying service hosts port of 80
+  * base it on the 'httpd' service above
+  * initialize the service with three replicas
+	docker service create --name "testweb" --publish 80:80 --replicas 3 httpd
+
+3. Verify the service is running
+	docker service ls
+
+4. List the all nodes and verify replicas are running on all three
+	docker service ps testweb
+
+5. Using whatever method you choose, check that the default site in the service is being served when you check port 80 on all three nodes
+		elinks http://<ip>
